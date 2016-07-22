@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.util.SocketUtils;
+
 import net.jodah.failsafe.CircuitBreaker;
 
 public class FailsafeTool2 {
@@ -18,45 +20,75 @@ public class FailsafeTool2 {
                 return (boolean)record;}
             );
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        FailsafeTool2 failsafeTool2 = new FailsafeTool2();
+    /**
+     * @param args
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    public static void main(String[] args) throws Exception {
+//        FailsafeTool2 failsafeTool2 = new FailsafeTool2();
 
-        circuitBreaker.halfOpen();
-        circuitBreaker.recordSuccess();
-        circuitBreaker.recordSuccess();
+//        circuitBreaker.halfOpen();
+//        circuitBreaker.recordSuccess();
+//        circuitBreaker.recordSuccess();
+        
+        CircuitBreaker breaker = new CircuitBreaker()
+                .withFailureThreshold(1,3)
+                .withSuccessThreshold(2)
+                .withDelay(1, TimeUnit.SECONDS);
+       
+        System.out.println(breaker.allowsExecution());
+        breaker.recordSuccess();
+        breaker.recordFailure(new Exception());
+        breaker.recordSuccess();
+        System.out.println("1 - "+breaker.getState().toString()+" -"+breaker.allowsExecution() );
+        Thread.sleep(2000l);
+        breaker.allowsExecution();
+        System.out.println("2 - "+breaker.getState().toString() );
+        
+        breaker.recordSuccess();
+        breaker.recordFailure(new Exception());
+        breaker.recordSuccess();
+        
+        System.out.println("3 - "+breaker.getState().toString()+" -"+breaker.allowsExecution() );
+        
+        
+        System.out.println("3 - "+breaker.getState().toString()+" -"+breaker.allowsExecution() );
+        System.out.println("3 - "+breaker.getState().toString()+" -"+breaker.allowsExecution() );
+        
         
         // int errNum=100;
         // for (int i = 0; i < errNum; i++) {
         // failsafeTool2.saveException();
         // }
 
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveException();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveSuccess();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveSuccess();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveException();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveException();
-        }
-        
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveSuccess();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveSuccess();
-        }
-        if (failsafeTool2.isBreak()) {
-            failsafeTool2.saveException();
-        }
-        
-        System.out.println("ok");
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveException();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveSuccess();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveSuccess();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveException();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveException();
+//        }
+//        
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveSuccess();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveSuccess();
+//        }
+//        if (failsafeTool2.isBreak()) {
+//            failsafeTool2.saveException();
+//        }
+//        
+//        System.out.println("ok");
     }
 
     public boolean isBreak() {

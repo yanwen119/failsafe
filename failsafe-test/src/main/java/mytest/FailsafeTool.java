@@ -83,14 +83,14 @@ public class FailsafeTool {
                 //failsafe.run(runnable1).get();
                 //System.out.println(failsafe.get(callable1).get());
                 
-                //异步run&get，存在问题：get值发生死锁
-                failsafe.runAsync(runnable);
-//                try {
-//                    FailsafeFuture<String> future = failsafe.getAsync(callable);
-//                    System.out.println(future.get());
-//                } catch (ExecutionException e) {
-//                    e.printStackTrace();
-//                }
+                //异步run&get
+                //failsafe.runAsync(runnable).get();
+                try {
+                    FailsafeFuture<String> future = failsafe.getAsync(callable);
+                    System.out.println(future.get(1, TimeUnit.SECONDS));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
             }
             
