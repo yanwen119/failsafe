@@ -4,6 +4,7 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
+import com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy;
 import com.netflix.hystrix.HystrixThreadPoolKey;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
@@ -54,14 +55,19 @@ public class MyCommand extends HystrixCommand<String> {
                 .andCommandKey(HystrixCommandKey.Factory.asKey(commandKey))
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(threadPoolKey))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.defaultSetter())
+                
                 /* 配置依赖超时时间,500毫秒*/  
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionTimeoutInMilliseconds(100)
                         .withCircuitBreakerSleepWindowInMilliseconds(30000)
+                        .withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
+                        //.withFallbackEnabled(false)
+//                        .withMetricsRollingPercentileWindowInMilliseconds(100)
+//                        .withMetricsRollingPercentileWindowBuckets(10)
                         //.withExecutionIsolationThreadInterruptOnTimeout(false)
-                        
+                        .withMetricsHealthSnapshotIntervalInMilliseconds(501)//采样间隔，影响熔断的准确行
                         //.withMetricsRollingPercentileWindowBuckets(6)
-                        //.withCircuitBreakerRequestVolumeThreshold(1)
+                        //.withCircuitBreakerRequestVolumeThreshold(10)
                         //.withCircuitBreakerErrorThresholdPercentage(51)
                         //.withRequestCacheEnabled(false)
                         //.withFallbackEnabled(false)
@@ -77,6 +83,7 @@ public class MyCommand extends HystrixCommand<String> {
         // TODO Auto-generated method stub
         System.out.println("end 同步测试");
         return "同步测试";
+        //throw new Exception("error");
     }
     
     @Override

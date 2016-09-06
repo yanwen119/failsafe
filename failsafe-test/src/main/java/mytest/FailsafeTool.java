@@ -26,10 +26,9 @@ public class FailsafeTool {
         @SuppressWarnings("unchecked")
         CircuitBreaker circuitBreaker = new CircuitBreaker().withFailureThreshold(2)// 连续失败
                 // .withFailureThreshold(1, 2)//失败频率,这两个不能同时配置
-                .withSuccessThreshold(2)
-                // .withSuccessThreshold(1, 2)
-                .withTimeout(5000, TimeUnit.MILLISECONDS).withDelay(10, TimeUnit.SECONDS).failIf((result,failure)->{ 
-                    return false;});//true代表出错
+                .withSuccessThreshold(2)//成功次数
+                // .withSuccessThreshold(1, 2)//成功率
+                .withTimeout(2000, TimeUnit.MILLISECONDS).withDelay(10, TimeUnit.SECONDS);//.failIf((result,failure)->{ return false;});//true代表出错
         
         int num = 1;
         //circuitBreaker.recordFailure(new Throwable("er"));
@@ -80,17 +79,17 @@ public class FailsafeTool {
             for (int i = 0; i < 10; i++) {
                 System.out.println("=======" + i + "=======");
                 //同步run&get
-                //failsafe.run(runnable1).get();
+                failsafe.run(runnable1).get();
                 //System.out.println(failsafe.get(callable1).get());
                 
                 //异步run&get
                 //failsafe.runAsync(runnable).get();
-                try {
-                    FailsafeFuture<String> future = failsafe.getAsync(callable);
-                    System.out.println(future.get(1, TimeUnit.SECONDS));
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    FailsafeFuture<String> future = failsafe.getAsync(callable);
+//                    System.out.println(future.get(1, TimeUnit.SECONDS));
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
 
             }
             
