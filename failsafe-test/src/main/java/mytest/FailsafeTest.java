@@ -35,7 +35,6 @@ public class FailsafeTest {
             try {
                 System.out.println("=======" + i + "=======");
                 failsafe.run(runnable).get();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

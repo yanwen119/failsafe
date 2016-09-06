@@ -55,25 +55,23 @@ public class MyCommand extends HystrixCommand<String> {
                 .andCommandKey(HystrixCommandKey.Factory.asKey(commandKey))
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(threadPoolKey))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.defaultSetter())
-                
-                /* 配置依赖超时时间,500毫秒*/  
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutInMilliseconds(100)
-                        .withCircuitBreakerSleepWindowInMilliseconds(30000)
-                        .withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)
-                        //.withFallbackEnabled(false)
-//                        .withMetricsRollingPercentileWindowInMilliseconds(100)
-//                        .withMetricsRollingPercentileWindowBuckets(10)
-                        //.withExecutionIsolationThreadInterruptOnTimeout(false)
-                        .withMetricsHealthSnapshotIntervalInMilliseconds(501)//采样间隔，影响熔断的准确行
-                        //.withMetricsRollingPercentileWindowBuckets(6)
-                        //.withCircuitBreakerRequestVolumeThreshold(10)
-                        //.withCircuitBreakerErrorThresholdPercentage(51)
-                        //.withRequestCacheEnabled(false)
-                        //.withFallbackEnabled(false)
-                        )
-                
-                );  
+                        .withExecutionIsolationStrategy(ExecutionIsolationStrategy.SEMAPHORE)// 采用信号量的形式做控制
+                        .withExecutionIsolationSemaphoreMaxConcurrentRequests(1000)// 设置信号量最大并发数
+                        .withCircuitBreakerSleepWindowInMilliseconds(30000)// 设置熔断时间
+                        .withCircuitBreakerErrorThresholdPercentage(50)// 设置熔断触发百分比
+                        .withMetricsHealthSnapshotIntervalInMilliseconds(501)// 采样间隔，影响熔断的准确行
+                        .withExecutionTimeoutEnabled(false)// 是否使用超时时间限制
+                        // .withExecutionTimeoutInMilliseconds(100)//设置单次执行超时时间
+                        .withFallbackEnabled(false)// 是否使用fallback
+                        // .withRequestCacheEnabled(false)//是否使用请求缓存
+
+                        .withMetricsRollingPercentileWindowInMilliseconds(100)
+                        .withMetricsRollingPercentileWindowBuckets(10)
+        // .withExecutionIsolationThreadInterruptOnTimeout(false)
+        // .withMetricsRollingPercentileWindowBuckets(6)
+        // .withCircuitBreakerRequestVolumeThreshold(10)
+        )); 
     }
 
     @Override
@@ -90,5 +88,6 @@ public class MyCommand extends HystrixCommand<String> {
     protected String getFallback() {
         return "执行降级处理";
     }
+    
     
 }
